@@ -77,3 +77,6 @@ biomag.coefs=coef(we.biomag.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
 
 lats.we=sort(unique(WE.age.len_Hg$LAT))
 WE.growth_biomag.coefs=as.data.frame(cbind(lats.we, growth.coefs, biomag.coefs))
+
+ggplot(we.growth.biomag,aes(x=growth.coefs, y=biomag.coef ,colour = latzones)) + geom_point(shape=16)+
+geom_smooth(method='lm', col= "black", lwd=1.25, lty=1)
