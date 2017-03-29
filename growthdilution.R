@@ -80,3 +80,17 @@ WE.growth_biomag.coefs=as.data.frame(cbind(lats.we, growth.coefs, biomag.coefs))
 
 ggplot(we.growth.biomag,aes(x=growth.coefs, y=biomag.coef ,colour = latzones)) + geom_point(shape=16)+
 geom_smooth(method='lm', col= "black", lwd=1.25, lty=1)
+
+#Randomize latitudes to test significance of correlations
+rand.biomag.mods=rlply(10, lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|sample(WE.age.len_Hg$LAT))))
+coef.biomag.rands=lapply(rand.mods, function(f) coef(f)$`sample(WE.age.len_Hg$LAT)`[,2])
+list.means=sapply(coef.rands, mean)
+list.sd=sapply(coef.rands, sd)
+median.biomag=sapply(coef.biomag.rands, quantile, probs =0.500)
+up.biomag=sapply(coef.bioag.rands, quantile, probs =0.999)
+low.biomag=sapply(coef.biomag.rands, quantile, probs =0.001)
+
+P=ggplot(we.growth.biomag,aes(x=growth.coefs, y=biomag.coef)) + geom_point(shape="o")+
+geom_smooth(method='lm', col= "black", lwd=1.25, lty=1)+
+geom_abline(intercept = 1.71, slope = -0.003, lty=2, lwd=1.25)
+P+theme_bw()
