@@ -1,5 +1,9 @@
+###Testing growth dilution in Walleye and Northern Pike. This was an extension of the merucry-size relationship models, but here we used
+###a more recent dataset that includes fish age information. The idea was to test if some of the broad-scale fish size-mercury 
+###relationships / patterns are due to variation in growth dilution among populations across large-scales.
 
-setwd("C:/Users/thoma/Rprojects/BSMdata")
+
+setwd("C:/Users/thoma/Rprojects/BSMdata") ##Used the Broad-scale monitoring data (BsM)
 we.data=read.csv("hg_age_lat_yr_WE.csv")
 we.data$sizecat=cut(we.data$Total_Length, c(min(we.data$Total_Length-10), 372, 435, 508, max(we.data$Total_Length)),
                     + labels=c("minnow", "small","medium", "large"))
@@ -43,7 +47,7 @@ we.growth.lmer=lmer(log(WE.age.len_Hg$Total_Length)~ log(WE.age.len_Hg$Age+1)+(1
 summary(we.growth.lmer)
 coef(we.growth.lmer)
 
-we.biomag.lmer=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LatZones))
+we.bioacc.lmer=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LatZones))
 summary(we.biomag.lmer)
 coef(we.biomag.lmer)
 
@@ -68,17 +72,17 @@ fixef(we.growth.lmer.lat)
 coef(we.growth.lmer.lat)
 growth.coefs=coef(we.growth.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
 
-we.biomag.lmer.lat=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LAT))
-summary(we.biomag.lmer.lat)
-ranef(we.biomag.lmer.lat)
-fixef(we.biomag.lmer.lat)
-coef(we.biomag.lmer.lat)
-biomag.coefs=coef(we.biomag.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
+we.bioacc.lmer.lat=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LAT))
+summary(we.bioacc.lmer.lat)
+ranef(we.bioacc.lmer.lat)
+fixef(we.bioacc.lmer.lat)
+coef(we.bioacc.lmer.lat)
+biomag.coefs=coef(we.bioacc.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
 
 lats.we=sort(unique(WE.age.len_Hg$LAT))
-WE.growth_biomag.coefs=as.data.frame(cbind(lats.we, growth.coefs, biomag.coefs))
+WE.growth_bioacc.coefs=as.data.frame(cbind(lats.we, growth.coefs, bioacc.coefs))
 
-ggplot(we.growth.biomag,aes(x=growth.coefs, y=biomag.coef ,colour = latzones)) + geom_point(shape=16)+
+ggplot(we.growth.bioacc,aes(x=growth.coefs, y=bioacc.coef ,colour = latzones)) + geom_point(shape=16)+
 geom_smooth(method='lm', col= "black", lwd=1.25, lty=1)
 
 #Randomize latitudes to test significance of correlations
