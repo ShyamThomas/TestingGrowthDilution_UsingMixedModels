@@ -35,7 +35,7 @@ AIC(lm.we.hg, gomp.we.hg, logis.we.hg)
 ########################################################using linear mixed effects regression models######################################################
 
 
-WE.bsm=read.csv("hg_age_lat_yr_WE.csv")
+WE.bsm=read.csv("hg_age_lat_yr_WE.csv")## Similare dataset is also available for northern pike
 head(WE.bsm)
 
 WE.age.len_Hg=subset(WE.bsm[,c(8,9,13,15,16,18,28,29,30)])
@@ -43,10 +43,12 @@ head(WE.age.len_Hg)
 WE.age.len_Hg$Age=WE.bsm$Assessed_Fish_Age
 write.csv(WE.age.len_Hg, file="WE.age.len_HG")
 
+##Evaluating growth rate of fish across latitudinal zones
 we.growth.lmer=lmer(log(WE.age.len_Hg$Total_Length)~ log(WE.age.len_Hg$Age+1)+(1+log(WE.age.len_Hg$Age+1)|WE.age.len_Hg$LatZones))
 summary(we.growth.lmer)
 coef(we.growth.lmer)
 
+##Evaluating mercury bioaccumulation of fish across latitudinal zones
 we.bioacc.lmer=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LatZones))
 summary(we.biomag.lmer)
 coef(we.biomag.lmer)
@@ -64,7 +66,7 @@ theme(legend.justification=c(1,0), legend.position=c(1,0))
 png("WE.grow.lats.png", width = 5, height = 4, units = 'in', res = 900)
 
 
-
+##Evaluating growth of fish across al unique latitudes
 we.growth.lmer.lat=lmer(log(WE.age.len_Hg$Total_Length)~ log(WE.age.len_Hg$Age+1)+(1+log(WE.age.len_Hg$Age+1)|WE.age.len_Hg$LAT))
 summary(we.growth.lmer.lat)
 ranef(we.growth.lmer.lat)
@@ -72,6 +74,7 @@ fixef(we.growth.lmer.lat)
 coef(we.growth.lmer.lat)
 growth.coefs=coef(we.growth.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
 
+##Evaluating mercury bioaccumulation of fish across latitudinal zones
 we.bioacc.lmer.lat=lmer(log(WE.age.len_Hg$VALUE)~log(WE.age.len_Hg$Total_Length)+(1+log(WE.age.len_Hg$Total_Length)|WE.age.len_Hg$LAT))
 summary(we.bioacc.lmer.lat)
 ranef(we.bioacc.lmer.lat)
@@ -80,8 +83,10 @@ coef(we.bioacc.lmer.lat)
 biomag.coefs=coef(we.bioacc.lmer.lat)$`WE.age.len_Hg$LAT`[,2]
 
 lats.we=sort(unique(WE.age.len_Hg$LAT))
-WE.growth_bioacc.coefs=as.data.frame(cbind(lats.we, growth.coefs, bioacc.coefs))
+WE.growth_bioacc.coefs=as.data.frame(cbind(lats.we, growth.coefs, bioacc.coefs))## combining latitude, growth rates and bioaccumulation 
+## factors into a single table.
 
+##Plotting the growth rate against bioaccumulation factor and using latzones to highlight the pattern
 ggplot(we.growth.bioacc,aes(x=growth.coefs, y=bioacc.coef ,colour = latzones)) + geom_point(shape=16)+
 geom_smooth(method='lm', col= "black", lwd=1.25, lty=1)
 
